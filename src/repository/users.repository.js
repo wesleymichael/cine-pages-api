@@ -15,3 +15,11 @@ export async function insertSessionRepository(token){
 export async function getUserByEmail(email){
     return await db.query(`SELECT * FROM "users" WHERE "email"=$1;`, [email]);
 }
+
+export async function getSession(token){
+    return await db.query(`SELECT * FROM "sessions" WHERE token = $1;`, [token]);
+}
+
+export async function deleteSession(token){
+    return await db.query(`DELETE FROM "sessions" WHERE token = $1;`, [token]);
+}
