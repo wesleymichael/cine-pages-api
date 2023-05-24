@@ -1,4 +1,4 @@
-import { getSession } from "../repository/users.repository.js";
+import { getSessionRepository } from "../repository/users.repository.js";
 
 export async function authValidation(req, res, next){
     const {authorization} = req.headers;
@@ -7,7 +7,7 @@ export async function authValidation(req, res, next){
     if(!token) return res.sendStatus(401);
 
     try {
-        const session = await getSession(token);
+        const session = await getSessionRepository(token);
 
         if(session.rowCount === 0) return res.sendStatus(401);
 

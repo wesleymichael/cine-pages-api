@@ -1,11 +1,11 @@
-import { getUserByEmail } from "../repository/users.repository.js";
+import { getUserByEmailRepository } from "../repository/users.repository.js";
 import bcrypt from "bcrypt";
 
 export async function validateSignin(req, res, next){
     const {email, password} = req.body;
 
     try {
-        const results = await getUserByEmail(email);
+        const results = await getUserByEmailRepository(email);
 
         if(!results.rowCount) return res.sendStatus(404);
 

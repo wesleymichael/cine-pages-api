@@ -1,4 +1,4 @@
-import { deleteSession, insertSessionRepository, insertUserRepository } from "../repository/users.repository.js";
+import { deleteSessionRepository, insertSessionRepository, insertUserRepository } from "../repository/users.repository.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -32,7 +32,7 @@ export async function signin(req, res){
 export async function logout(req, res){
     const session = res.locals.session;
     try {
-        await deleteSession(session.token);
+        await deleteSessionRepository(session.token);
         res.sendStatus(200);
     } catch (error) {
         return res.status(500).send(error.message);

@@ -12,14 +12,14 @@ export async function insertSessionRepository(token){
     return await db.query(`INSERT INTO sessions (token) VALUES ($1);`, [token]);
 }
 
-export async function getUserByEmail(email){
+export async function getUserByEmailRepository(email){
     return await db.query(`SELECT * FROM "users" WHERE "email"=$1;`, [email]);
 }
 
-export async function getSession(token){
+export async function getSessionRepository(token){
     return await db.query(`SELECT * FROM "sessions" WHERE token = $1;`, [token]);
 }
 
-export async function deleteSession(token){
+export async function deleteSessionRepository(token){
     return await db.query(`DELETE FROM "sessions" WHERE token = $1;`, [token]);
 }
