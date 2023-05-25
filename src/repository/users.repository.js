@@ -1,6 +1,6 @@
 import { db } from "../database/database.js";
 
-export async function insertUserRepository(username, img, email, password){
+export async function insertUserDB(username, img, email, password){
     const result = await db.query(`
         INSERT INTO "users" ("username", "img", "email", "password")
         VALUES ($1, $2, $3, $4);    
@@ -8,18 +8,6 @@ export async function insertUserRepository(username, img, email, password){
     return result;
 }
 
-export async function insertSessionRepository(token){
-    return await db.query(`INSERT INTO sessions (token) VALUES ($1);`, [token]);
-}
-
-export async function getUserByEmailRepository(email){
+export async function getUserByEmailDB(email){
     return await db.query(`SELECT * FROM "users" WHERE "email"=$1;`, [email]);
-}
-
-export async function getSessionRepository(token){
-    return await db.query(`SELECT * FROM "sessions" WHERE token = $1;`, [token]);
-}
-
-export async function deleteSessionRepository(token){
-    return await db.query(`DELETE FROM "sessions" WHERE token = $1;`, [token]);
 }

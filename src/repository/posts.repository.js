@@ -1,6 +1,6 @@
 import { db } from "../database/database.js";
 
-export async function insertPostRepository(userId, description, img){
+export async function insertPostDB(userId, description, img){
     const results = db.query(`
         INSERT INTO "posts" ("userId", "description", "img") 
             VALUES ($1, $2, $3);`
@@ -8,7 +8,7 @@ export async function insertPostRepository(userId, description, img){
     return results;
 }
 
-export async function getPostsRepository(userId){
+export async function getPostsDB(userId){
     const results = await db.query(`
         SELECT 
             u.username,
