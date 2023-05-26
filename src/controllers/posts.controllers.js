@@ -1,4 +1,4 @@
-import { getPostsByUsernameDB, getPostsDB, insertPostDB } from "../repository/posts.repository.js";
+import { getPostByIdDB, getPostsByUsernameDB, getPostsDB, insertPostDB, likeDB } from "../repository/posts.repository.js";
 import { getUserByUsernameDB } from "../repository/users.repository.js";
 import { tokenToUser } from "../utils/tokenToUser.js";
 
@@ -34,10 +34,27 @@ export async function getPostsByUsername(req, res){
     
     try {
         const userResult = await getUserByUsernameDB(username);
-        if(!userResult.rowCount) return res.status(404).send("Nome de usuário não cadastrado.")
+        if(!userResult.rowCount) return res.status(404).send("Nome de usuário não cadastrado.");
         
         const postResult = await getPostsByUsernameDB(username, user.id);
         return res.send(postResult.rows);
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+}
+
+export async function like(req, res){
+    const { postId } = req.params;
+    const session = res.locals.session;
+    const user = tokenToUser(session.token);
+    
+    try {
+        const postResult = await getPostByIdDB(postId);
+        if(!postResult.rowCount) return res.status(404).send("Post não encontrado!");
+        
+        const likeResult = await likeDB(postId, user.id);
+        if(!likeResult.rowCount) return res.status(409).send("Postagem já curtida!");
+        return res.sendStatus(200);
     } catch (error) {
         return res.status(500).send(error.message);
     }
