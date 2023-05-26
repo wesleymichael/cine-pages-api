@@ -1,4 +1,4 @@
-import { getPostsDB, insertPostDB } from "../repository/posts.repository.js";
+import { getPostsByUsernameDB, getPostsDB, insertPostDB } from "../repository/posts.repository.js";
 import { tokenToUser } from "../utils/tokenToUser.js";
 
 export async function createPost(req, res){
@@ -26,13 +26,18 @@ export async function getPosts(req, res){
     }
 }
 
-// export async function getPostsByUsername(req, res){
-//     const session = res.locals.session;
-//     const user = tokenToUser(session.token);
+export async function getPostsByUsername(req, res){
+    const { username } = req.params;
+    const session = res.locals.session;
+    const user = tokenToUser(session.token);
     
-//     try {
-//         const results = 1;
-//     } catch (error) {
-//         return res.status(500).send(error.message);
-//     }
-// }
+    try {
+        const userResult = await getPostsByUsernameDB(username);
+        if(!userResult.rowCount) return res.status(404).send("Nome de usuário não cadastrado.")
+        
+        const postResult = await getPostsByUsernameDB(username, user.id);
+        return res.send(postResult.rows);
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+}

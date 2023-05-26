@@ -9,5 +9,9 @@ export async function insertUserDB(username, img, email, password){
 }
 
 export async function getUserByEmailDB(email){
-    return await db.query(`SELECT * FROM "users" WHERE "email"=$1;`, [email]);
+    return await db.query(`SELECT * FROM "users" WHERE "email" = $1;`, [email]);
+}
+
+export async function getUserByUsernameDB(username){
+    return await db.query(`SELECT * FROM "users" WHERE "email" = $1;`, [username]);
 }
