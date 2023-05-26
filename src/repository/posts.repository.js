@@ -20,24 +20,27 @@ export async function getPostsDB(userId){
                 'totalLikes', COUNT(l.id),
                 'liked', EXISTS (SELECT 1 FROM likes WHERE likes."userId" = $1 AND likes."postId" = p.id)
             ) AS post,
-            json_build_object(
-                '1', COUNT(r.stars) FILTER (WHERE r.stars = 1),
-                '2', COUNT(r.stars) FILTER (WHERE r.stars = 2),
-                '3', COUNT(r.stars) FILTER (WHERE r.stars = 3),
-                '4', COUNT(r.stars) FILTER (WHERE r.stars = 4),
-                '5', COUNT(r.stars) FILTER (WHERE r.stars = 5)
+            (
+                SELECT json_build_object(
+                    '1', COUNT(*) FILTER (WHERE r.stars = 1),
+                    '2', COUNT(*) FILTER (WHERE r.stars = 2),
+                    '3', COUNT(*) FILTER (WHERE r.stars = 3),
+                    '4', COUNT(*) FILTER (WHERE r.stars = 4),
+                    '5', COUNT(*) FILTER (WHERE r.stars = 5)
+                )
+                FROM ratings r
+                WHERE r."postId" = p.id
             ) AS ratings
         FROM
             users u
             JOIN posts p ON u.id = p."userId"
             LEFT JOIN likes l ON p.id = l."postId"
-            LEFT JOIN ratings r ON r."postId" = p.id
         GROUP BY
             u.username,
             u."img",
             p.id,
             p.img,
-            p.description;
+        p.description;
         `, [userId]);
     return results;
 }
