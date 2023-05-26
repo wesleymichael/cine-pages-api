@@ -17,7 +17,7 @@ export async function getPostsDB(userId){
                 'id', p.id,
                 'img', p.img,
                 'description', p.description,
-                'totalLikes', COUNT(l.id),
+                'likes', COUNT(l.id),
                 'liked', EXISTS (SELECT 1 FROM likes WHERE likes."userId" = $1 AND likes."postId" = p.id)
             ) AS post,
             (
@@ -47,60 +47,60 @@ export async function getPostsDB(userId){
 
 export async function getPostsByUsernameDB(username, myUserId){
     const results = await db.query(`
-    WITH user_data AS (
         SELECT
-            u.username, u.id,
+            u.id,
+            u.username,
             u.img AS "imgUser",
             EXISTS (SELECT 1 FROM followers WHERE "userId" = $2 AND following = u.id) AS "isFollowing",
-            (SELECT COUNT(*) FROM followers WHERE following = u.id) AS "followers",
-            (SELECT COUNT(*) FROM followers WHERE "userId" = u.id) AS "following"
+            (SELECT COUNT(*) FROM followers WHERE following = u.id) AS followers,
+            (SELECT COUNT(*) FROM followers WHERE "userId" = u.id) AS following,
+            (
+                SELECT json_agg(post_details)
+                FROM (
+                    SELECT
+                        p.id AS post_id,
+                        json_build_object(
+                            'id', p.id,
+                            'img', p.img,
+                            'description', p.description,
+                            'likes', COALESCE(likes.count, 0),
+                            'liked', COALESCE(likes.liked, false),
+                            'ratings', (
+                                SELECT json_build_object(
+                                    '1', COUNT(*) FILTER (WHERE r.stars = 1),
+                                    '2', COUNT(*) FILTER (WHERE r.stars = 2),
+                                    '3', COUNT(*) FILTER (WHERE r.stars = 3),
+                                    '4', COUNT(*) FILTER (WHERE r.stars = 4),
+                                    '5', COUNT(*) FILTER (WHERE r.stars = 5)
+                                )
+                                FROM ratings r
+                                WHERE r."postId" = p.id
+                            )
+                        ) AS post_details
+                    FROM
+                        posts p
+                    LEFT JOIN (
+                        SELECT
+                            "postId",
+                            COUNT(*) AS count,
+                            EXISTS (SELECT 1 FROM likes WHERE likes."userId" = $2 AND likes."postId" = "postId") AS liked
+                        FROM
+                            likes
+                        GROUP BY
+                            "postId"
+                    ) likes ON p.id = likes."postId"
+                    WHERE
+                        p."userId" = u.id
+                ) subquery
+            ) AS "postsUsername"
         FROM
             users u
         WHERE
             u.username = $1
-    ),
-    post_data AS (
-        SELECT
-            p.id, p."userId",
-            p.img,
-            p.description,
-            COUNT(l.id) AS "likes",
-            EXISTS (SELECT 1 FROM likes WHERE "userId" = $2 AND "postId" = p.id) AS "liked",
-            json_build_object(
-                '1', COUNT(r.stars) FILTER (WHERE r.stars = 1),
-                '2', COUNT(r.stars) FILTER (WHERE r.stars = 2),
-                '3', COUNT(r.stars) FILTER (WHERE r.stars = 3),
-                '4', COUNT(r.stars) FILTER (WHERE r.stars = 4),
-                '5', COUNT(r.stars) FILTER (WHERE r.stars = 5)
-            ) AS ratings
-        FROM
-            posts p
-        LEFT JOIN likes l ON p.id = l."postId"
-        LEFT JOIN ratings r ON p.id = r."postId"
         GROUP BY
-            p.id
-    )
-    SELECT
-        ud.id,
-        ud.username,
-        ud."imgUser",
-        ud."isFollowing",
-        ud."followers",
-        ud."following",
-        (
-            SELECT json_agg(json_build_object(
-                'id', pd.id,
-                'img', pd.img,
-                'description', pd.description,
-                'likes', pd."likes",
-                'liked', pd."liked",
-                'ratings', pd.ratings
-            ))
-            FROM post_data pd
-            WHERE pd."userId" = ud.id
-        ) AS "posts"
-    FROM
-        user_data ud;
+            u.username,
+            u.id,
+            u.img;
     `, [username, myUserId]);
     return results;
 }
