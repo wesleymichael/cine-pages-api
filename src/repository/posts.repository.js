@@ -17,6 +17,7 @@ export async function getPostsDB(userId){
                 'id', p.id,
                 'img', p.img,
                 'description', p.description,
+                'createdAt', p."createdAt",
                 'likes', COUNT(l.id),
                 'liked', EXISTS (SELECT 1 FROM likes WHERE likes."userId" = $1 AND likes."postId" = p.id)
             ) AS post,
@@ -63,6 +64,7 @@ export async function getPostsByUsernameDB(username, myUserId){
                             'id', p.id,
                             'img', p.img,
                             'description', p.description,
+                            'createdAt', p."createdAt",
                             'likes', COALESCE(likes.count, 0),
                             'liked', COALESCE(likes.liked, false),
                             'ratings', (
@@ -104,3 +106,4 @@ export async function getPostsByUsernameDB(username, myUserId){
     `, [username, myUserId]);
     return results;
 }
+
