@@ -1,5 +1,4 @@
 import { followDB, getFollowersDB, getFollowingsDB, unfollowDB } from "../repository/followers.reposity.js";
-import { getPostsByUsernameDB } from "../repository/posts.repository.js";
 import { getUserByUsernameDB } from "../repository/users.repository.js";
 import { tokenToUser } from "../utils/tokenToUser.js";
 
