@@ -31,17 +31,23 @@ export async function getFollowersDB(usernameId, myUserId){
 }
 
 export async function followDB(usernameId, myUserId) {
-    const results = await db.query(
-      `INSERT INTO followers ("userId", "following")
-       SELECT $2, $1
-       WHERE NOT EXISTS (
-         SELECT 1
-         FROM followers
-         WHERE "userId" = $2 AND "following" = $1
-       )
-       RETURNING *`,
-      [usernameId, myUserId]
-    );
+    const results = await db.query(`
+    INSERT INTO followers ("userId", "following")
+        SELECT $2, $1
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM followers
+            WHERE "userId" = $2 AND "following" = $1
+        )
+    RETURNING *;
+    `,[usernameId, myUserId]);
     return results;
-  }
-  
+}
+
+export async function unfollowDB(usernameId, myUserId){
+    const results = await db.query(`
+        DELETE FROM followers
+	        WHERE "userId" = $2 AND "following" = $1;
+    `,[usernameId, myUserId]);
+    return results;
+}
