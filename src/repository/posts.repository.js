@@ -124,3 +124,10 @@ export async function likeDB(postId, userId){
     `, [postId, userId]);
     return results;
 }
+
+export async function dislikeDB(postId, userId){
+    return await db.query(`
+        DELETE FROM likes
+            WHERE "userId" = $2 AND "postId" = $1;
+    `, [postId, userId]);
+}

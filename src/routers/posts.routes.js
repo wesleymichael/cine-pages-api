@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authValidation } from "../middlewares/authValidation.middleware.js";
-import { createPost, getPosts, getPostsByUsername, like } from "../controllers/posts.controllers.js";
+import { createPost, dislike, getPosts, getPostsByUsername, like } from "../controllers/posts.controllers.js";
 import { validadeSchema } from "../middlewares/validateSchema.middleware.js";
 import { newPostSchema } from "../schemas/posts.schemas.js";
 
@@ -10,5 +10,6 @@ postsRouter.post("/new-post", authValidation, validadeSchema(newPostSchema), cre
 postsRouter.get("/posts", authValidation, getPosts);
 postsRouter.get("/posts/:username", authValidation, getPostsByUsername);
 postsRouter.post("/like/:postId", authValidation, like);
+postsRouter.delete("/dislike/:postId", authValidation, dislike);
 
 export default postsRouter;
