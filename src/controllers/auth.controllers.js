@@ -32,7 +32,7 @@ export async function signin(req, res){
 
         await insertSessionDB(token);
 
-        res.status(201).send({token});
+        res.status(201).send({token, user: results.rows[0]});
     } catch (error) {
         return res.status(500).send(error.message);
     }
