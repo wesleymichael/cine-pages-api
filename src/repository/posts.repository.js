@@ -41,7 +41,8 @@ export async function getPostsDB(userId){
             u."img",
             p.id,
             p.img,
-        p.description;
+        p.description
+        ORDER BY p."createdAt" DESC;
         `, [userId]);
     return results;
 }
@@ -93,6 +94,7 @@ export async function getPostsByUsernameDB(username, myUserId){
                     ) likes ON p.id = likes."postId"
                     WHERE
                         p."userId" = u.id
+                    ORDER BY p."createdAt" DESC
                 ) subquery
             ) AS "postsUsername"
         FROM
