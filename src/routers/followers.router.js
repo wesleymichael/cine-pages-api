@@ -4,8 +4,8 @@ import { follow, getFollowers, getFollowings, unfollow } from "../controllers/fo
 
 const followersRouter = Router();
 
-followersRouter.get("/following", authValidation, getFollowings);
-followersRouter.get("/followers", authValidation, getFollowers);
+followersRouter.get("/following/:username", authValidation, getFollowings);
+followersRouter.get("/followers/:username", authValidation, getFollowers);
 followersRouter.post("/follow", authValidation, follow);
 followersRouter.delete("/unfollow", authValidation, unfollow);
 

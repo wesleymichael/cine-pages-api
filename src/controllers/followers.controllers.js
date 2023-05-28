@@ -19,9 +19,10 @@ export async function getFollowings(req, res){
 }
 
 export async function getFollowers(req, res){
-    const { username } = req.body;
+    const { username } = req.params;
     const session = res.locals.session;
     const user = tokenToUser(session.token);
+    console.log(req.body)
     
     try {
         const userResult = await getUserByUsernameDB(username);
