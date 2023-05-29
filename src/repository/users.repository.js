@@ -15,3 +15,7 @@ export async function getUserByEmailDB(email){
 export async function getUserByUsernameDB(username){
     return await db.query(`SELECT * FROM "users" WHERE "username" = $1;`, [username]);
 }
+
+export async function getUsersDB(filter) {
+    return await db.query('SELECT * FROM "users" WHERE username LIKE $1;', [`%${filter}%`]);
+}
