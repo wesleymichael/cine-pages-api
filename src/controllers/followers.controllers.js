@@ -3,7 +3,7 @@ import { getUserByUsernameDB } from "../repository/users.repository.js";
 import { tokenToUser } from "../utils/tokenToUser.js";
 
 export async function getFollowings(req, res){
-    const { username } = req.body;
+    const { username } = req.params;
     const session = res.locals.session;
     const user = tokenToUser(session.token);
     
